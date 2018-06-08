@@ -1,4 +1,4 @@
-local parser = require "depgraph.luacheck.parser"
+local parse = require "depgraph.luacheck.parser"
 local linearize = require "depgraph.luacheck.linearize"
 local utils = require "depgraph.luacheck.utils"
 
@@ -19,9 +19,9 @@ local function add_require(requires, req_node, arg_node, nested, protected, cond
 
    if arg_node then
       if arg_node.tag == "String" then
-         name = arg_node[1]:gsub("/", ".")
+         name = arg_node[1]
       elseif arg_node.tag == "Op" and arg_node[1] == "concat" and arg_node[2].tag == "String" then
-         name = (arg_node[2][1]:gsub("/", "."):match("^(.*%.)") or "") .. "*"
+         name = (arg_node[2][1]:match("^(.*%.)") or "") .. "*"
       end
    end
 
@@ -148,7 +148,7 @@ local function location_comparator(req1, req2)
 end
 
 local function scan_or_throw_syntax_error(src)
-   local ast = parser.parse(src)
+   local ast = parse(src)
    linearize(chstate_stub, ast)
 
    local requires = {}
@@ -175,14 +175,12 @@ end
 -- 'protected' key with true value for a call using 'pcall' or 'xpcall'.
 -- On syntax error return nil, error message.
 local function scan(src)
-   local ok, res = utils.try(scan_or_throw_syntax_error, src)
+   local modules, err = utils.pcall(scan_or_throw_syntax_error, src)
 
-   if ok then
-      return res
-   elseif utils.is_instance(res.err, parser.SyntaxError) then
-      return nil, ("syntax error on line %d, column %d: %s"):format(res.err.line, res.err.column, res.err.msg)
+   if modules then
+      return modules
    else
-      error(res, 0)
+      return nil, ("syntax error on line %d, column %d: %s"):format(err.line, err.column, err.msg)
    end
 end
 

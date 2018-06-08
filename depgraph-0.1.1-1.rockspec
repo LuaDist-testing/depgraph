@@ -1,15 +1,16 @@
 -- This file was automatically generated for the LuaDist project.
 
 package = "depgraph"
-version = "0.1.0-1"
+version = "0.1.1-1"
 -- LuaDist source
 source = {
-  tag = "0.1.0-1",
+  tag = "0.1.1-1",
   url = "git://github.com/LuaDist-testing/depgraph.git"
 }
 -- Original source
 -- source = {
---    url = "git://github.com/mpeterv/depgraph"
+--    url = "git://github.com/mpeterv/depgraph",
+--    tag = "0.1.1"
 -- }
 description = {
    summary = "Dependency analyzer and visualizer for Lua packages",

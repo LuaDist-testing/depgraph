@@ -3,7 +3,7 @@ local scan = require "depgraph.scan"
 
 local depgraph = {}
 
-depgraph._VERSION = "0.2.0"
+depgraph._VERSION = "0.1.1"
 
 local function normalize_io_error(name, err)
    if err:sub(1, #name + 2) == (name .. ": ") then
@@ -95,7 +95,7 @@ local function group_by_module(requires, strict)
    for _, require_table in ipairs(requires) do
       if not strict or not require_table.lazy then
          local dep = name_to_dep[require_table.name]
-
+         
          if not dep then
             dep = {
                name = require_table.name,
@@ -233,7 +233,7 @@ local function add_rockspec(graph, rockspec_name)
 
    local ok = true
 
-   if rockspec.build.type == "builtin" or rockspec.build.type == "module" then
+   if rockspec.build.type == "builtin" then
       ok, err = add_lua_files_from_table(graph, rockspec.build.modules)
    end
 
@@ -263,13 +263,11 @@ local function add_lua_files_from_dir(graph, dir, prefix_dir, ext)
 
          if lfs.attributes(full_path, "mode") == "directory" then
             ok, err = add_lua_files_from_dir(graph, full_path, prefix_dir, ext)
-         elseif lfs.attributes(full_path, "mode") == "file" then
-            if path:match("%.lua$") or (ext and loadfile(full_path)) then
-               if ext then
-                  ok, err = add_ext_file(graph, full_path)
-               else
-                  ok, err = add_file(graph, full_path, prefix_dir)
-               end
+         elseif lfs.attributes(full_path, "mode") == "file" and (path:match("%.lua$") or ext and loadfile(full_path)) then
+            if ext then
+               ok, err = add_ext_file(graph, full_path)
+            else
+               ok, err = add_file(graph, full_path, prefix_dir)
             end
          end
 
@@ -478,15 +476,7 @@ function depgraph.show(graph, name)
       for _, file_list in ipairs({graph.modules, graph.ext_files}) do
          for _, dependant in ipairs(file_list) do
             for _, dep in ipairs(dependant.deps) do
-               local dep_matches
-
-               if dep.name:match("%.%*$") then
-                  dep_matches = dep.name:sub(1, -2) == name:sub(1, #dep.name - 1)
-               else
-                  dep_matches = dep.name == name
-               end
-
-               if dep_matches then
+               if dep.name == name or (dep.name:match("%.%*$") and dep.name:sub(1, -2) == name:sub(1, #dep.name - 1)) then
                   table.insert(matching_deps, dep)
                   local label = dependant.name
 
