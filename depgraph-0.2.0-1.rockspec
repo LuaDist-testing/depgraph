@@ -1,16 +1,16 @@
 -- This file was automatically generated for the LuaDist project.
 
 package = "depgraph"
-version = "0.1.1-1"
+version = "0.2.0-1"
 -- LuaDist source
 source = {
-  tag = "0.1.1-1",
+  tag = "0.2.0-1",
   url = "git://github.com/LuaDist-testing/depgraph.git"
 }
 -- Original source
 -- source = {
 --    url = "git://github.com/mpeterv/depgraph",
---    tag = "0.1.1"
+--    tag = "0.2.0"
 -- }
 description = {
    summary = "Dependency analyzer and visualizer for Lua packages",
@@ -30,23 +30,23 @@ image using GraphViz. It can also detect circular and external dependencies.
 }
 dependencies = {
    "lua >= 5.1, < 5.4",
-   "argparse >= 0.5.0",
+   "argparse >= 0.6.0",
    "luafilesystem >= 1.6.3"
 }
 build = {
    type = "builtin",
    modules = {
-      ["depgraph"] = "src/depgraph/init.lua",
-      ["depgraph.scan"] = "src/depgraph/scan.lua",
+      depgraph = "src/depgraph/init.lua",
       ["depgraph.cli"] = "src/depgraph/cli.lua",
       ["depgraph.luacheck.lexer"] = "src/depgraph/luacheck/lexer.lua",
-      ["depgraph.luacheck.parser"] = "src/depgraph/luacheck/parser.lua",
       ["depgraph.luacheck.linearize"] = "src/depgraph/luacheck/linearize.lua",
-      ["depgraph.luacheck.utils"] = "src/depgraph/luacheck/utils.lua"
+      ["depgraph.luacheck.parser"] = "src/depgraph/luacheck/parser.lua",
+      ["depgraph.luacheck.utils"] = "src/depgraph/luacheck/utils.lua",
+      ["depgraph.scan"] = "src/depgraph/scan.lua"
    },
    install = {
       bin = {
-         ["luadepgraph"] = "bin/luadepgraph.lua"
+         luadepgraph = "bin/luadepgraph.lua"
       }
    }
 }
